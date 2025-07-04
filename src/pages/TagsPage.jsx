@@ -55,6 +55,7 @@ import { z } from "zod";
 const printTagsSchema = z.object({
   quantity: z.number().min(1, "Quantity must be at least 1").max(100, "Quantity cannot exceed 100"),
   golf_course: z.string().min(1, "Golf course is required"),
+  batch_name: z.string().min(1, "Batch name is required"),
 });
 
 const TagsPage = () => {
@@ -79,6 +80,7 @@ const TagsPage = () => {
     defaultValues: {
       quantity: 1,
       golf_course: "",
+      batch_name: "",
     },
   });
 
@@ -103,7 +105,12 @@ const TagsPage = () => {
   const handlePrintTags = async (values) => {
     setPrintLoading(true);
     try {
-      const response = await tagsApi.printTags(values);
+      const printData = {
+        quantity: values.quantity,
+        golf_course: values.golf_course,
+        name: values.batch_name,
+      };
+      const response = await tagsApi.printTags(printData);
       setDownloadUrl(response.file_url);
       refreshTags(); // Refresh the tags table
     } catch (error) {
@@ -368,7 +375,7 @@ const TagsPage = () => {
                         </TableCell>
                         <TableCell>
                           <div className="font-mono text-xs text-gray-600">
-                            {getBatchId(tag.batch)}
+                            {getBatchName(tag.batch)}
                           </div>
                           <div className="text-xs text-gray-500">{tag.batch?.total_tags} tags</div>
                         </TableCell>
@@ -427,6 +434,25 @@ const TagsPage = () => {
           {!downloadUrl ? (
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handlePrintTags)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="batch_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Batch Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value || "")}
+                          disabled={printLoading}
+                        />
+                      </FormControl>
+                      <FormDescription>Enter the number of tags to print (1-100)</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="quantity"
