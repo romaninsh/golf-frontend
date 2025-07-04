@@ -218,6 +218,10 @@ const TagsPage = () => {
     return batch?.id?.id?.String || "N/A";
   };
 
+  const getBatchName = (batch) => {
+    return batch.name || "N/A";
+  };
+
   const getGolfCourseId = (golfCourse) => {
     return golfCourse?.id?.id?.String || "N/A";
   };
@@ -616,6 +620,12 @@ const TagsPage = () => {
                   </label>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          Batch Name
+                        </label>
+                        <p className="font-mono text-sm">{getBatchName(selectedTag.batch)}</p>
+                      </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-500 mb-1">
                           Batch ID
